@@ -3,6 +3,7 @@ import { useState } from 'react'
 import Login from './components/Login'
 import Dashboard from './components/Dashboard'
 import Statistics from './components/Statistics'
+import Schedule from './components/schedule'
 import './App.css'
 
 function App() {
@@ -37,6 +38,14 @@ function App() {
             element={
               isAuthenticated ? 
               <Statistics /> : 
+              <Navigate to="/login" />
+            } 
+          />
+          <Route 
+            path="/schedule" 
+            element={
+              isAuthenticated ? 
+              <Schedule /> : 
               <Navigate to="/login" />
             } 
           />

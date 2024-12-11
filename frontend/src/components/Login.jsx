@@ -1,19 +1,24 @@
+// frontend/src/components/Login.jsx
 import { useState } from 'react';
-import { 
-  Box, 
-  Card, 
-  CardContent, 
-  TextField, 
-  Button, 
+import { useNavigate } from 'react-router-dom';
+import {
+  Box,
+  Card,
+  CardContent,
+  TextField,
+  Button,
   Typography,
   Container
 } from '@mui/material';
+import axios from 'axios'; // Import axios for making HTTP requests
 
 const Login = ({ onLogin }) => {
   const [credentials, setCredentials] = useState({
     teacherId: '',
     password: ''
   });
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -23,15 +28,33 @@ const Login = ({ onLogin }) => {
     }));
   };
 
-  const handleSubmit = (e) => {
+
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // For demo purposes, using hardcoded credentials
-    if (credentials.teacherId === 'demo' && credentials.password === 'demo') {
-      onLogin(true);
-    } else {
-      alert('Invalid credentials');
+    try {
+      const response = await axios.post('http://localhost:5000/api/login', {
+        teacherId: credentials.teacherId.trim(),
+        password: parseInt(credentials.password.trim(), 10),
+      });
+
+      if (response.data.success) {
+        const { Id, Name, Password } = response.data.teacher; // Destructure the teacher data
+        console.log('Teacher ID:', Id);
+        console.log('Teacher Name:', Name);
+        console.log('Teacher Password:', Password);
+        onLogin(true);
+        navigate('/dashboard', { state: { name: Name } });
+      } else {
+        alert(response.data.message || 'Invalid credentials');
+      }
+    } catch (error) {
+      console.error('Error during login:', error);
+      alert('An error occurred. Please try again.');
     }
   };
+
+
 
   return (
     <Container component="main" maxWidth="xs">
