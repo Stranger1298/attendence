@@ -81,13 +81,13 @@ function Schedule() {
   }
 
   return (
-    <div>
-      <h2>Teacher Schedule (ID: {id})</h2>
-      <TableContainer component={Paper}>
+    <div style={{ padding: '20px', backgroundColor: '#e3f2fd' }}>
+      <h2 style={{ textAlign: 'center', color: '#1976d2', marginBottom: '20px' }}>Teacher Schedule (ID: {id})</h2>
+      <TableContainer component={Paper} style={{ boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)', borderRadius: '12px' }}>
         <Table sx={{ minWidth: 650 }} aria-label="teacher schedule table">
           <TableHead>
             <TableRow>
-              <TableCell align="center">Day</TableCell>
+              <TableCell align="center" style={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: 'white', borderRadius: '8px 0 0 8px' }}>Day</TableCell>
               <TableCell align="center">8:30 AM - 9:30 AM</TableCell>
               <TableCell align="center">9:30 AM - 10:30 AM</TableCell>
               <TableCell align="center">10:30 AM - 10:50 AM (Short Break)</TableCell>
@@ -101,10 +101,10 @@ function Schedule() {
           </TableHead>
           <TableBody>
             {schedule.Schedule.map((daySchedule, dayIndex) => (
-              <TableRow key={dayIndex}>
-                <TableCell align="center">{daySchedule.Day}</TableCell>
+              <TableRow key={dayIndex} style={{ '&:nth-of-type(odd)': { backgroundColor: '#f9f9f9' }, '&:hover': { backgroundColor: '#e1f5fe' } }}>
+                <TableCell align="center" style={{ fontWeight: 'bold' }}>{daySchedule.Day}</TableCell>
                 {daySchedule.Periods.map((subject, periodIndex) => (
-                  <TableCell key={periodIndex} align="center">{subject || 'N/A'}</TableCell>
+                  <TableCell key={periodIndex} align="center" style={{ padding: '16px', border: '1px solid #ddd', borderRadius: '4px' }}>{subject || 'N/A'}</TableCell>
                 ))}
               </TableRow>
             ))}
