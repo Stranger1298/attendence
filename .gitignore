@@ -1,0 +1,57 @@
+# Dependency directories
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build output directories
+build/
+dist/
+out/
+
+# Logs
+logs
+*.log
+
+# IDE and Editor directories
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Frontend build artifacts
+frontend/build
+frontend/dist
+
+# Backend specific
+backend/build
+backend/dist
+
+# Temporary files
+*.tmp
+*.bak
+
+# Dependency lock files (optional, but recommended)
+package-lock.json
+yarn.lock
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Testing
+coverage/
+.nyc_output/
+
+# Miscellaneous
+.cache/
