@@ -1,13 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
 
 function Schedule() {
   const location = useLocation();
   const { id } = location.state || {};
   const navigate = useNavigate();
-  const ii = 1;
-  
+
   const [schedule, setSchedule] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -18,29 +24,25 @@ function Schedule() {
   useEffect(() => {
     const fetchTeacherSchedule = async () => {
       try {
-        // Reset state before fetching
         setLoading(true);
         setError(null);
 
         console.log('FRONTEND: Attempting to fetch schedule for ID:', id);
 
-        // Make API request using the ID from location state
         const response = await axios.get(`http://localhost:5000/api/teacher-schedule/${id}`, {
           headers: {
             'Content-Type': 'application/json'
           }
         });
-        
+
         console.log('FRONTEND: Fetched schedule:', response.data);
-        
-        // Update schedule state with fetched data
         setSchedule(response.data);
         setLoading(false);
       } catch (err) {
         console.error('FRONTEND: Full error object:', err);
         console.error('FRONTEND: Error response:', err.response);
         console.error('FRONTEND: Error message:', err.message);
-        
+
         setError({
           message: err.response?.data?.message || 'Failed to fetch schedule',
           status: err.response?.status,
@@ -50,7 +52,6 @@ function Schedule() {
       }
     };
 
-    // Only fetch if id exists
     if (id) {
       fetchTeacherSchedule();
     } else {
@@ -60,7 +61,6 @@ function Schedule() {
     }
   }, [id]);
 
-  // Error rendering
   if (error) {
     return (
       <div>
@@ -72,55 +72,45 @@ function Schedule() {
     );
   }
 
-  // Render loading state
   if (loading) {
     return <div>Loading schedule...</div>;
   }
 
-  // Additional safety check
   if (!schedule) {
     return <div>No schedule data available</div>;
   }
 
-  // Render schedule
   return (
     <div>
       <h2>Teacher Schedule (ID: {id})</h2>
-      {!schedule.Periods || schedule.Periods.length === 0 ? (
-        <p>No periods found</p>
-      ) : (
-        <div>
-          <h3>Periods: {schedule.Periods.join(', ')}</h3>
-          <h3>Timings:</h3>
-          <ul>
-            {schedule.Timings && schedule.Timings.map((timing, index) => (
-              <li key={index}>{timing}</li>
-            ))}
-          </ul>
-          
-          <h3>Daily Schedule:</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>Day</th>
-                {schedule.Periods.map((period, index) => (
-                  <th key={index}>Period {period}</th>
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 650 }} aria-label="teacher schedule table">
+          <TableHead>
+            <TableRow>
+              <TableCell align="center">Day</TableCell>
+              <TableCell align="center">8:30 AM - 9:30 AM</TableCell>
+              <TableCell align="center">9:30 AM - 10:30 AM</TableCell>
+              <TableCell align="center">10:30 AM - 10:50 AM (Short Break)</TableCell>
+              <TableCell align="center">10:50 AM - 11:50 AM</TableCell>
+              <TableCell align="center">11:50 AM - 12:50 PM</TableCell>
+              <TableCell align="center">12:50 PM - 1:45 PM (Lunch Break)</TableCell>
+              <TableCell align="center">1:45 PM - 2:40 PM</TableCell>
+              <TableCell align="center">2:40 PM - 3:35 PM</TableCell>
+              <TableCell align="center">3:35 PM - 4:30 PM</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {schedule.Schedule.map((daySchedule, dayIndex) => (
+              <TableRow key={dayIndex}>
+                <TableCell align="center">{daySchedule.Day}</TableCell>
+                {daySchedule.Periods.map((subject, periodIndex) => (
+                  <TableCell key={periodIndex} align="center">{subject || 'N/A'}</TableCell>
                 ))}
-              </tr>
-            </thead>
-            <tbody>
-              {schedule.Schedule && schedule.Schedule.map((daySchedule, dayIndex) => (
-                <tr key={dayIndex}>
-                  <td>{daySchedule.Day}</td>
-                  {daySchedule.Periods.map((subject, periodIndex) => (
-                    <td key={periodIndex}>{subject || 'N/A'}</td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </div>
   );
 }
