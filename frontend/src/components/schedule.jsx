@@ -84,36 +84,36 @@ function Schedule() {
 
   // Render schedule
   return (
-    <div>
-      <h2>Teacher Schedule (ID: {id})</h2>
+    <div className="schedule-container">
+      <h2 className="schedule-title">Teacher Schedule (ID: {id})</h2>
       {!schedule.Periods || schedule.Periods.length === 0 ? (
-        <p>No periods found</p>
+        <p className="no-periods">No periods found</p>
       ) : (
-        <div>
-          <h3>Periods: {schedule.Periods.join(', ')}</h3>
-          <h3>Timings:</h3>
-          <ul>
+        <div className="schedule-details">
+          <h3 className="periods-title">Periods: {schedule.Periods.join(', ')}</h3>
+          <h3 className="timings-title">Timings:</h3>
+          <ul className="timings-list">
             {schedule.Timings && schedule.Timings.map((timing, index) => (
-              <li key={index}>{timing}</li>
+              <li key={index} className="timing-item">{timing}</li>
             ))}
           </ul>
           
-          <h3>Daily Schedule:</h3>
-          <table>
+          <h3 className="daily-schedule-title">Daily Schedule:</h3>
+          <table className="schedule-table">
             <thead>
               <tr>
-                <th>Day</th>
+                <th className="day-header">Day</th>
                 {schedule.Periods.map((period, index) => (
-                  <th key={index}>Period {period}</th>
+                  <th key={index} className="period-header">Period {period}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {schedule.Schedule && schedule.Schedule.map((daySchedule, dayIndex) => (
-                <tr key={dayIndex}>
-                  <td>{daySchedule.Day}</td>
+                <tr key={dayIndex} className="day-row">
+                  <td className="day-cell">{daySchedule.Day}</td>
                   {daySchedule.Periods.map((subject, periodIndex) => (
-                    <td key={periodIndex}>{subject || 'N/A'}</td>
+                    <td key={periodIndex} className="subject-cell">{subject || 'N/A'}</td>
                   ))}
                 </tr>
               ))}
