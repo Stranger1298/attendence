@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { 
-  Box, 
-  Container, 
-  Typography, 
-  Button, 
+import { useNavigate, useLocation } from 'react-router-dom';
+import {
+  Box,
+  Container,
+  Typography,
+  Button,
   Grid,
   Card,
   CardContent,
@@ -36,6 +36,13 @@ const COLLEGE_LOCATION = {
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { name } = location.state || {};
+  const teacherId = location.state?.teacherId;
+
+  // Debugging: Log the teacherId
+  console.log('Teacher ID:', teacherId);
+
   const [isMarked, setIsMarked] = useState(false);
   const [canMarkAttendance, setCanMarkAttendance] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -75,11 +82,11 @@ const Dashboard = () => {
     <Container maxWidth="lg">
       <Box sx={{ mt: 4, mb: 6 }}>
         {/* Header Section */}
-        <Paper 
-          elevation={0} 
-          sx={{ 
-            p: 3, 
-            mb: 4, 
+        <Paper
+          elevation={0}
+          sx={{
+            p: 3,
+            mb: 4,
             background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
             color: 'white',
             borderRadius: 2
@@ -88,19 +95,19 @@ const Dashboard = () => {
           <Grid container alignItems="center" spacing={3}>
             <Grid item>
               <Avatar
-                sx={{ 
-                  width: 64, 
+                sx={{
+                  width: 64,
                   height: 64,
                   bgcolor: 'white',
                   color: '#1976d2'
                 }}
               >
-                T
+                {name ? name.charAt(0) : 'T'}
               </Avatar>
             </Grid>
             <Grid item xs>
               <Typography variant="h4" sx={{ fontWeight: 500 }}>
-                {getGreeting()}, Professor
+                {getGreeting()}, {name || 'Professor'}
               </Typography>
               <Typography variant="subtitle1" sx={{ opacity: 0.9, mt: 0.5 }}>
                 <AccessTimeIcon sx={{ fontSize: 16, mr: 1, verticalAlign: 'text-bottom' }} />
@@ -110,8 +117,8 @@ const Dashboard = () => {
               </Typography>
             </Grid>
             <Grid item>
-              <IconButton 
-                color="inherit" 
+              <IconButton
+                color="inherit"
                 onClick={() => navigate('/')}
                 sx={{ bgcolor: 'rgba(255,255,255,0.1)', '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' } }}
               >
@@ -134,8 +141,8 @@ const Dashboard = () => {
                     {Math.round((attendanceStats.present / attendanceStats.total) * 100)}%
                   </Typography>
                 </Box>
-                <LinearProgress 
-                  variant="determinate" 
+                <LinearProgress
+                  variant="determinate"
                   value={(attendanceStats.present / attendanceStats.total) * 100}
                   sx={{ height: 8, borderRadius: 4 }}
                 />
@@ -161,10 +168,10 @@ const Dashboard = () => {
                     days
                   </Typography>
                 </Box>
-                <Chip 
-                  icon={<CheckCircleIcon />} 
-                  label="Keep it up!" 
-                  color="success" 
+                <Chip
+                  icon={<CheckCircleIcon />}
+                  label="Keep it up!"
+                  color="success"
                   variant="outlined"
                   sx={{ mt: 2 }}
                 />
@@ -178,18 +185,18 @@ const Dashboard = () => {
                 <Typography variant="h6" gutterBottom color="primary">
                   Location Status
                 </Typography>
-                <LocationTracker 
+                <LocationTracker
                   collegeLocation={COLLEGE_LOCATION}
                   onLocationVerified={handleLocationVerified}
                 />
                 {canMarkAttendance && !isMarked && (
-                  <Button 
-                    variant="contained" 
-                    color="primary" 
+                  <Button
+                    variant="contained"
+                    color="primary"
                     onClick={markAttendance}
                     startIcon={<HowToRegIcon />}
                     fullWidth
-                    sx={{ 
+                    sx={{
                       mt: 2,
                       py: 1.5,
                       boxShadow: 2,
@@ -200,9 +207,9 @@ const Dashboard = () => {
                   </Button>
                 )}
                 {isMarked && (
-                  <Alert 
-                    severity="success" 
-                    sx={{ 
+                  <Alert
+                    severity="success"
+                    sx={{
                       mt: 2,
                       borderRadius: 2,
                       '& .MuiAlert-icon': { fontSize: '1.5rem' }
@@ -230,7 +237,7 @@ const Dashboard = () => {
                       onClick={() => navigate('/statistics')}
                       startIcon={<AssessmentIcon />}
                       fullWidth
-                      sx={{ 
+                      sx={{
                         py: 2,
                         borderRadius: 2,
                         borderWidth: 2,
@@ -246,7 +253,7 @@ const Dashboard = () => {
                       color="secondary"
                       startIcon={<LocationIcon />}
                       fullWidth
-                      sx={{ 
+                      sx={{
                         py: 2,
                         borderRadius: 2,
                         borderWidth: 2,
@@ -255,6 +262,26 @@ const Dashboard = () => {
                     >
                       Update Location
                     </Button>
+
+
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Button
+                      variant="outlined"
+                      color="secondary"
+                      fullWidth
+                      onClick={() => navigate('/schedule', { state: { teacherId } })}
+                      sx={{
+                        py: 2,
+                         borderRadius: 2,
+                        borderWidth: 2,
+                        '&:hover': { borderWidth: 2 }
+                      }}
+                    >
+                      View Schedule
+                    </Button>
+
+
                   </Grid>
                 </Grid>
               </CardContent>
