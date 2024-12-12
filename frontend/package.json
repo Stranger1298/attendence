@@ -15,7 +15,10 @@
     "@mui/icons-material": "^5.15.1",
     "@mui/material": "^5.15.1",
     "attendence": "file:",
+<<<<<<< Updated upstream
     "axios": "^1.7.9",
+=======
+>>>>>>> Stashed changes
     "chart.js": "^4.4.1",
     "react": "^18.2.0",
     "react-chartjs-2": "^5.2.0",
