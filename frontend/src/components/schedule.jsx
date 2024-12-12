@@ -30,22 +30,22 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 export default function Schedule() {
   const location = useLocation();
-  const { teacherId } = location.state || {};
+  const { id } = location.state || {};
 
-  console.log('Received Teacher ID:', teacherId);
+  console.log('Received Teacher ID:', id);
 
   const [scheduleData, setScheduleData] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchSchedule = async () => {
-      if (!teacherId) {
+      if (!id) {
         console.error('Teacher ID is not provided');
         setError('Teacher ID is not provided');
         return;
       }
       try {
-        const response = await fetch(`http://localhost:5000/api/schedule/${teacherId}`);
+        const response = await fetch(`http://localhost:5000/api/schedule/${id}`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -58,7 +58,7 @@ export default function Schedule() {
     };
 
     fetchSchedule();
-  }, [teacherId]);
+  }, [id]);
 
   if (error) {
     return <div>{error}</div>;

@@ -44,7 +44,7 @@ const Login = ({ onLogin }) => {
         console.log('Teacher Name:', Name);
         console.log('Teacher Password:', Password);
         onLogin(true);
-        navigate('/dashboard', { state: { name: Name } });
+        navigate('/dashboard', { state: { name: Name,id:Id } });
       } else {
         alert(response.data.message || 'Invalid credentials');
       }

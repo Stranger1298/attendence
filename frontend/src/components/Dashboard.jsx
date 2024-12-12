@@ -37,11 +37,12 @@ const COLLEGE_LOCATION = {
 const Dashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { name } = location.state || {};
+  const { name,id } = location.state || {};
   const teacherId = location.state?.teacherId;
 
   // Debugging: Log the teacherId
   console.log('Teacher ID:', teacherId);
+  console.log(id)
 
   const [isMarked, setIsMarked] = useState(false);
   const [canMarkAttendance, setCanMarkAttendance] = useState(false);
@@ -270,7 +271,7 @@ const Dashboard = () => {
                       variant="outlined"
                       color="secondary"
                       fullWidth
-                      onClick={() => navigate('/schedule', { state: { teacherId } })}
+                      onClick={() => navigate('/schedule', { state: { id } })}
                       sx={{
                         py: 2,
                          borderRadius: 2,
