@@ -10,7 +10,7 @@ import {
   Typography,
   Container
 } from '@mui/material';
-import axios from 'axios'; // Import axios for making HTTP requests
+import axios from 'axios';
 
 const Login = ({ onLogin }) => {
   const [credentials, setCredentials] = useState({
@@ -28,23 +28,18 @@ const Login = ({ onLogin }) => {
     }));
   };
 
-
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await axios.post('http://localhost:5000/api/login', {
         teacherId: credentials.teacherId.trim(),
-        password: parseInt(credentials.password.trim(), 10),
+        password: credentials.password.trim(),
       });
 
       if (response.data.success) {
-        const { Id, Name, Password } = response.data.teacher; // Destructure the teacher data
-        console.log('Teacher ID:', Id);
-        console.log('Teacher Name:', Name);
-        console.log('Teacher Password:', Password);
+        const { Id, Name } = response.data.teacher;
         onLogin(true);
-        navigate('/dashboard', { state: { name: Name,id:Id } });
+        navigate('/dashboard', { state: { name: Name, id: Id } });
       } else {
         alert(response.data.message || 'Invalid credentials');
       }
@@ -54,21 +49,43 @@ const Login = ({ onLogin }) => {
     }
   };
 
-
-
   return (
-    <Container component="main" maxWidth="xs">
+    <Container
+      component="main"
+      maxWidth="xs"
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '100vh',
+        padding: '0', // Remove extra padding
+      }}
+    >
       <Box
         sx={{
-          marginTop: 8,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
+          margin: 'auto', // Center the component within the container
         }}
       >
-        <Card sx={{ minWidth: 275, width: '100%' }}>
+        <Card
+          sx={{
+            minWidth: 275,
+            width: '100%',
+            backgroundColor: '#ffffff',
+            borderRadius: '12px',
+            boxShadow: 3,
+          }}
+        >
           <CardContent>
-            <Typography variant="h5" component="div" gutterBottom align="center">
+            <Typography
+              variant="h4"
+              component="div"
+              gutterBottom
+              align="center"
+              sx={{ color: '#6200ea', fontWeight: 'bold' }}
+            >
               Teacher Login
             </Typography>
             <form onSubmit={handleSubmit}>
@@ -83,6 +100,14 @@ const Login = ({ onLogin }) => {
                 autoFocus
                 value={credentials.teacherId}
                 onChange={handleChange}
+                sx={{
+                  '& .MuiInputLabel-root': { color: '#6200ea' },
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': { borderColor: '#6200ea' },
+                    '&:hover fieldset': { borderColor: '#3700b3' },
+                  },
+                  '& .MuiInputBase-input': { borderRadius: '8px' },
+                }}
               />
               <TextField
                 margin="normal"
@@ -95,12 +120,27 @@ const Login = ({ onLogin }) => {
                 autoComplete="current-password"
                 value={credentials.password}
                 onChange={handleChange}
+                sx={{
+                  '& .MuiInputLabel-root': { color: '#6200ea' },
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': { borderColor: '#6200ea' },
+                    '&:hover fieldset': { borderColor: '#3700b3' },
+                  },
+                  '& .MuiInputBase-input': { borderRadius: '8px' },
+                }}
               />
               <Button
                 type="submit"
                 fullWidth
                 variant="contained"
-                sx={{ mt: 3, mb: 2 }}
+                sx={{
+                  mt: 3,
+                  mb: 2,
+                  backgroundColor: '#6200ea',
+                  '&:hover': { backgroundColor: '#3700b3' },
+                  borderRadius: '8px',
+                  transition: '0.3s ease-in-out',
+                }}
               >
                 Sign In
               </Button>

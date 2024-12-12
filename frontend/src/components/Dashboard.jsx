@@ -84,11 +84,11 @@ const Dashboard = () => {
       <Box sx={{ mt: 4, mb: 6 }}>
         {/* Header Section */}
         <Paper
-          elevation={0}
+          elevation={3}
           sx={{
             p: 3,
             mb: 4,
-            background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
+            background: 'linear-gradient(135deg, #2196F3 0%, #1976D2 100%)',
             color: 'white',
             borderRadius: 2
           }}
@@ -129,10 +129,10 @@ const Dashboard = () => {
           </Grid>
         </Paper>
 
-        <Grid container spacing={3}>
+        <Grid container spacing={4}>
           {/* Stats Cards */}
           <Grid item xs={12} md={4}>
-            <Card sx={{ height: '100%', bgcolor: '#f8fafc' }}>
+            <Card sx={{ height: '100%', bgcolor: '#e3f2fd', borderRadius: 2 }}>
               <CardContent>
                 <Typography variant="h6" gutterBottom color="primary">
                   Attendance Rate
@@ -145,7 +145,7 @@ const Dashboard = () => {
                 <LinearProgress
                   variant="determinate"
                   value={(attendanceStats.present / attendanceStats.total) * 100}
-                  sx={{ height: 8, borderRadius: 4 }}
+                  sx={{ height: 8, borderRadius: 4, bgcolor: '#90caf9' }}
                 />
                 <Typography variant="body2" sx={{ mt: 1 }} color="text.secondary">
                   {attendanceStats.present} days present out of {attendanceStats.total} working days
@@ -225,15 +225,15 @@ const Dashboard = () => {
 
           {/* Quick Actions */}
           <Grid item xs={12}>
-            <Card sx={{ bgcolor: '#f8fafc' }}>
+            <Card sx={{ bgcolor: '#f5f5f5', borderRadius: 2 }}>
               <CardContent>
                 <Typography variant="h6" gutterBottom color="primary" sx={{ mb: 3 }}>
                   Quick Actions
                 </Typography>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6} md={3}>
+                <Grid container spacing={3}>
+                  <Grid item xs={12} sm={6} md={4}>
                     <Button
-                      variant="outlined"
+                      variant="contained"
                       color="primary"
                       onClick={() => navigate('/statistics')}
                       startIcon={<AssessmentIcon />}
@@ -241,14 +241,13 @@ const Dashboard = () => {
                       sx={{
                         py: 2,
                         borderRadius: 2,
-                        borderWidth: 2,
-                        '&:hover': { borderWidth: 2 }
+                        '&:hover': { bgcolor: '#1976d2' }
                       }}
                     >
                       View Statistics
                     </Button>
                   </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
+                  <Grid item xs={12} sm={6} md={4}>
                     <Button
                       variant="outlined"
                       color="secondary"
@@ -257,16 +256,13 @@ const Dashboard = () => {
                       sx={{
                         py: 2,
                         borderRadius: 2,
-                        borderWidth: 2,
                         '&:hover': { borderWidth: 2 }
                       }}
                     >
                       Update Location
                     </Button>
-
-
                   </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
+                  <Grid item xs={12} sm={6} md={4}>
                     <Button
                       variant="outlined"
                       color="secondary"
@@ -274,15 +270,12 @@ const Dashboard = () => {
                       onClick={() => navigate('/schedule', { state: { id } })}
                       sx={{
                         py: 2,
-                         borderRadius: 2,
-                        borderWidth: 2,
+                        borderRadius: 2,
                         '&:hover': { borderWidth: 2 }
                       }}
                     >
                       View Schedule
                     </Button>
-
-
                   </Grid>
                 </Grid>
               </CardContent>
