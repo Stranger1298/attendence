@@ -104,9 +104,60 @@ app.get('/api/teacher-schedule/:id', async (req, res) => {
   }
 });
 
+// Define the Attendance schema
+const attendanceSchema = new mongoose.Schema({
+  Id: Number,
+  Attendance: [
+    {
+      Date: String,
+      Time_In: String,
+      Present_Absent: String,
+      Time_Out: String,
+    },
+  ],
+}, { collection: 'teacher_id' });
+
+// Create a model for Attendance
+const Attendance = mongoose.model('Attendance', attendanceSchema);
+
+// API endpoint to mark attendance
+app.post('/api/attendance/mark', async (req, res) => {
+  const { userId, timestamp, location } = req.body;
+
+  try {
+    // Check if attendance record exists for the given userId
+    let attendanceRecord = await Attendance.findOne({ Id: userId });
+
+    const attendanceEntry = {
+      Date: new Date(timestamp).toISOString().split('T')[0], // Format date
+      Time_In: new Date(timestamp).toLocaleTimeString(), // Current time
+      Present_Absent: "Present",
+      Time_Out: null,
+    };
+
+    if (!attendanceRecord) {
+      // If no record exists, create a new one
+      attendanceRecord = new Attendance({
+        Id: userId,
+        Attendance: [attendanceEntry],
+      });
+    } else {
+      // If record exists, modify the existing data
+      attendanceRecord.Attendance.push(attendanceEntry);
+    }
+
+    await attendanceRecord.save();
+    res.status(200).send("Attendance marked successfully");
+  } catch (error) {
+    console.error("Error marking attendance", error);
+    res.status(500).send("Failed to mark attendance");
+  }
+});
+
+// Start the server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });
 
 // schedule.jsx

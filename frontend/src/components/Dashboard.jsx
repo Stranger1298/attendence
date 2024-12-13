@@ -277,6 +277,25 @@ const Dashboard = () => {
                       View Schedule
                     </Button>
                   </Grid>
+
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Button
+                      variant="outlined"
+                      color="secondary"
+                      fullWidth
+                      onClick={() => navigate('/attendance', { state: { id } })}
+                      sx={{
+                        py: 2,
+                         borderRadius: 2,
+                        borderWidth: 2,
+                        '&:hover': { borderWidth: 2 }
+                      }}
+                    >
+                      Mark Attendance
+                    </Button>
+
+
+                  </Grid>
                 </Grid>
               </CardContent>
             </Card>

@@ -4,6 +4,7 @@ import Login from './components/Login'
 import Dashboard from './components/Dashboard'
 import Statistics from './components/Statistics'
 import Schedule from './components/schedule'
+import AttendanceForm from './components/AttendanceForm'
 import './App.css'
 
 function App() {
@@ -46,6 +47,14 @@ function App() {
             element={
               isAuthenticated ? 
               <Schedule /> : 
+              <Navigate to="/login" />
+            } 
+          />
+          <Route 
+            path="/attendance" 
+            element={
+              isAuthenticated ? 
+              <AttendanceForm /> : 
               <Navigate to="/login" />
             } 
           />
