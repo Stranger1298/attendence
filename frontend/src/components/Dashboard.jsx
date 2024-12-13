@@ -27,6 +27,7 @@ import {
   CheckCircleOutlined as CheckCircleIcon,
 } from '@mui/icons-material';
 import axios from 'axios';
+import Todo from './Todo'; // Import the Todo component
 
 const COLLEGE_LOCATION = {
   latitude: 13.068185,
@@ -342,6 +343,18 @@ const Dashboard = () => {
             </Grid>
           </Grid>
 
+          {/* Todo Component Card */}
+          <Grid item xs={12} sx={{ mt: 4 }}>
+            <Card sx={{ bgcolor: '#f5f5f5', borderRadius: 2 }}>
+              <CardContent>
+                <Typography variant="h6" gutterBottom color="primary" sx={{ mb: 3 }}>
+                  Your Tasks
+                </Typography>
+                <Todo />
+              </CardContent>
+            </Card>
+          </Grid>
+
           {/* Quick Actions */}
           <Grid item xs={12}>
             <Card sx={{ bgcolor: '#f5f5f5', borderRadius: 2 }}>
@@ -386,62 +399,62 @@ const Dashboard = () => {
             </Card>
           </Grid>
         </Grid>
+
+        {/* Success Dialog */}
+        <Dialog
+          open={showSuccessDialog}
+          onClose={() => setShowSuccessDialog(false)}
+          PaperProps={{
+            sx: {
+              borderRadius: 2,
+              minWidth: '300px'
+            }
+          }}
+        >
+          <DialogTitle sx={{ textAlign: 'center', pt: 3 }}>
+            <CheckCircleIcon sx={{ fontSize: 60, color: '#2e7d32', mb: 2 }} />
+            <Typography variant="h6" component="div">
+              Attendance Marked Successfully!
+            </Typography>
+          </DialogTitle>
+          <DialogContent sx={{ pb: 3 }}>
+            <Typography variant="body1" sx={{ textAlign: 'center', color: '#555' }}>
+              Your attendance has been recorded for today
+            </Typography>
+          </DialogContent>
+        </Dialog>
+
+        {/* Error Alerts */}
+        {attendanceStatus === 'error' && (
+          <Alert 
+            severity="error" 
+            sx={{ 
+              position: 'fixed', 
+              bottom: 24, 
+              right: 24, 
+              boxShadow: 3 
+            }}
+            onClose={() => setAttendanceStatus(null)}
+          >
+            Failed to mark attendance. Please try again.
+          </Alert>
+        )}
+
+        {attendanceStatus === 'location-error' && (
+          <Alert 
+            severity="error" 
+            sx={{ 
+              position: 'fixed', 
+              bottom: 24, 
+              right: 24, 
+              boxShadow: 3 
+            }}
+            onClose={() => setAttendanceStatus(null)}
+          >
+            You must be within 500 meters of the college to mark attendance!
+          </Alert>
+        )}
       </Box>
-
-      {/* Success Dialog */}
-      <Dialog
-        open={showSuccessDialog}
-        onClose={() => setShowSuccessDialog(false)}
-        PaperProps={{
-          sx: {
-            borderRadius: 2,
-            minWidth: '300px'
-          }
-        }}
-      >
-        <DialogTitle sx={{ textAlign: 'center', pt: 3 }}>
-          <CheckCircleIcon sx={{ fontSize: 60, color: '#2e7d32', mb: 2 }} />
-          <Typography variant="h6" component="div">
-            Attendance Marked Successfully!
-          </Typography>
-        </DialogTitle>
-        <DialogContent sx={{ pb: 3 }}>
-          <Typography variant="body1" sx={{ textAlign: 'center', color: '#555' }}>
-            Your attendance has been recorded for today
-          </Typography>
-        </DialogContent>
-      </Dialog>
-
-      {/* Error Alerts */}
-      {attendanceStatus === 'error' && (
-        <Alert 
-          severity="error" 
-          sx={{ 
-            position: 'fixed', 
-            bottom: 24, 
-            right: 24, 
-            boxShadow: 3 
-          }}
-          onClose={() => setAttendanceStatus(null)}
-        >
-          Failed to mark attendance. Please try again.
-        </Alert>
-      )}
-
-      {attendanceStatus === 'location-error' && (
-        <Alert 
-          severity="error" 
-          sx={{ 
-            position: 'fixed', 
-            bottom: 24, 
-            right: 24, 
-            boxShadow: 3 
-          }}
-          onClose={() => setAttendanceStatus(null)}
-        >
-          You must be within 500 meters of the college to mark attendance!
-        </Alert>
-      )}
     </Container>
   );
 };
