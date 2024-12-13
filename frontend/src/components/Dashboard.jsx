@@ -11,6 +11,11 @@ import {
   Paper,
   Avatar,
   IconButton,
+  Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  CircularProgress,
 } from '@mui/material';
 import {
   AssessmentOutlined as AssessmentIcon,
@@ -18,7 +23,16 @@ import {
   AccessTimeOutlined as AccessTimeIcon,
   CalendarTodayOutlined as CalendarIcon,
   ExitToAppOutlined as LogoutIcon,
+  LocationOnOutlined as LocationIcon,
+  CheckCircleOutlined as CheckCircleIcon,
 } from '@mui/icons-material';
+import axios from 'axios';
+
+const COLLEGE_LOCATION = {
+  latitude: 13.068185,
+  longitude: 77.50754474895987,
+  radius: 500 // meters
+};
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -27,6 +41,14 @@ const Dashboard = () => {
   const teacherId = location.state?.teacherId;
 
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [isLocationVerified, setIsLocationVerified] = useState(false);
+  const [attendanceMarked, setAttendanceMarked] = useState(false);
+  const [currentLocation, setCurrentLocation] = useState(null);
+  const [isWithinRange, setIsWithinRange] = useState(false);
+  const [isMarkingAttendance, setIsMarkingAttendance] = useState(false);
+  const [attendanceStatus, setAttendanceStatus] = useState(null);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const [locationError, setLocationError] = useState(null);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -40,6 +62,99 @@ const Dashboard = () => {
     if (hour < 12) return 'Good Morning';
     if (hour < 17) return 'Good Afternoon';
     return 'Good Evening';
+  };
+
+  const handleLocationVerification = (verified, location) => {
+    setIsLocationVerified(verified);
+    setCurrentLocation(location);
+    setIsWithinRange(verified);
+  };
+
+  const handleAttendanceSubmit = async () => {
+    if (!isLocationVerified) {
+      setAttendanceStatus('location-error');
+      return;
+    }
+
+    setIsMarkingAttendance(true);
+    setAttendanceStatus(null);
+
+    try {
+      const response = await axios.post('http://localhost:5000/api/attendance/mark', {
+        userId: id,
+        timestamp: new Date().toISOString(),
+        location: currentLocation
+      });
+
+      if (response.status === 200) {
+        setAttendanceMarked(true);
+        setAttendanceStatus('success');
+        setShowSuccessDialog(true);
+        setTimeout(() => {
+          setShowSuccessDialog(false);
+        }, 3000);
+      }
+    } catch (error) {
+      console.error("Error marking attendance", error);
+      setAttendanceStatus('error');
+    } finally {
+      setIsMarkingAttendance(false);
+    }
+  };
+
+  const getLocation = () => {
+    setLocationError(null);
+    
+    if (!navigator.geolocation) {
+      setLocationError('Geolocation is not supported by your browser');
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const userLat = position.coords.latitude;
+        const userLng = position.coords.longitude;
+
+        // Calculate distance from college
+        const distance = calculateDistance(
+          userLat,
+          userLng,
+          COLLEGE_LOCATION.latitude,
+          COLLEGE_LOCATION.longitude
+        );
+
+        // Check if within range (500 meters)
+        const withinRange = distance <= COLLEGE_LOCATION.radius;
+
+        handleLocationVerification(withinRange, {
+          latitude: userLat,
+          longitude: userLng
+        });
+      },
+      (error) => {
+        setLocationError(error.message);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0
+      }
+    );
+  };
+
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371e3; // Earth's radius in meters
+    const φ1 = lat1 * Math.PI/180;
+    const φ2 = lat2 * Math.PI/180;
+    const Δφ = (lat2-lat1) * Math.PI/180;
+    const Δλ = (lon2-lon1) * Math.PI/180;
+
+    const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+              Math.cos(φ1) * Math.cos(φ2) *
+              Math.sin(Δλ/2) * Math.sin(Δλ/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+    return R * c; // Distance in meters
   };
 
   return (
@@ -93,71 +208,138 @@ const Dashboard = () => {
         </Paper>
 
         <Grid container spacing={4}>
-          {/* Mark Attendance Card */}
-          <Grid item xs={12}>
-            <Card 
-              sx={{ 
-                background: 'linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%)',
-                borderRadius: 2,
-                boxShadow: '0 4px 20px 0 rgba(0,0,0,0.1)',
-                transition: 'transform 0.2s ease-in-out',
-                '&:hover': {
-                  transform: 'translateY(-4px)'
-                }
-              }}
-            >
-              <CardContent sx={{ textAlign: 'center', py: 4 }}>
-                <Typography 
-                  variant="h5" 
-                  sx={{ 
-                    mb: 3, 
-                    color: '#1b5e20',
-                    fontWeight: 600 
-                  }}
-                >
-                  Ready to Mark Your Attendance?
-                </Typography>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  fullWidth
-                  onClick={() => navigate('/attendance', { state: { id } })}
-                  startIcon={
-                    <HowToRegIcon sx={{ fontSize: 28 }} />
+          {/* Two cards in a row */}
+          <Grid container item spacing={4}>
+            {/* Location Verification Card */}
+            <Grid item xs={12} md={6}>
+              <Card 
+                sx={{ 
+                  background: '#f5f5f5',
+                  borderRadius: 2,
+                  height: '100%' // Make cards same height
+                }}
+              >
+                <CardContent sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                  <Typography variant="h6" color="primary" sx={{ mb: 2 }}>
+                    <LocationIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
+                    Location Verification
+                  </Typography>
+                  
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    onClick={getLocation}
+                    startIcon={<LocationIcon />}
+                    sx={{ mb: 2 }}
+                  >
+                    Verify Location
+                  </Button>
+
+                  {locationError && (
+                    <Alert severity="error" sx={{ mb: 2 }}>
+                      {locationError}
+                    </Alert>
+                  )}
+
+                  {currentLocation && (
+                    <Alert 
+                      severity={isWithinRange ? "success" : "error"}
+                      sx={{ mb: 2 }}
+                    >
+                      {isWithinRange 
+                        ? "You are within the college premises"
+                        : "You must be within 500 meters of the college to mark attendance"
+                      }
+                    </Alert>
+                  )}
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* Mark Attendance Card */}
+            <Grid item xs={12} md={6}>
+              <Card 
+                sx={{ 
+                  background: 'linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%)',
+                  borderRadius: 2,
+                  boxShadow: '0 4px 20px 0 rgba(0,0,0,0.1)',
+                  transition: 'transform 0.2s ease-in-out',
+                  height: '100%', // Make cards same height
+                  '&:hover': {
+                    transform: 'translateY(-4px)'
                   }
-                  sx={{
-                    py: 2.5,
-                    px: 6,
-                    fontSize: '1.3rem',
-                    fontWeight: 600,
-                    borderRadius: 3,
-                    textTransform: 'none',
-                    background: 'linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%)',
-                    boxShadow: '0 4px 15px 0 rgba(46,125,50,0.3)',
-                    maxWidth: '600px',
-                    margin: '0 auto',
-                    '&:hover': {
-                      background: 'linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%)',
-                      boxShadow: '0 6px 20px 0 rgba(46,125,50,0.4)',
-                      transform: 'translateY(-2px)'
-                    },
-                    transition: 'all 0.3s ease'
-                  }}
-                >
-                  Mark Attendance
-                </Button>
-                <Typography 
-                  variant="body1" 
-                  sx={{ 
-                    mt: 2, 
-                    color: '#2e7d32',
-                    opacity: 0.8 
-                  }}
-                >
-                  Click to record your attendance for today
-                </Typography>
-              </CardContent>
-            </Card>
+                }}
+              >
+                <CardContent sx={{ 
+                  height: '100%', 
+                  display: 'flex', 
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  py: 3 
+                }}>
+                  <Typography 
+                    variant="h6" 
+                    sx={{ 
+                      mb: 3, 
+                      color: '#1b5e20',
+                      fontWeight: 600 
+                    }}
+                  >
+                    Ready to Mark Your Attendance?
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                    onClick={handleAttendanceSubmit}
+                    disabled={!isLocationVerified || isMarkingAttendance || attendanceMarked}
+                    startIcon={
+                      isMarkingAttendance ? (
+                        <CircularProgress size={24} color="inherit" />
+                      ) : (
+                        <HowToRegIcon sx={{ fontSize: 24 }} />
+                      )
+                    }
+                    sx={{
+                      py: 1.5,
+                      px: 4,
+                      fontSize: '1.1rem',
+                      fontWeight: 600,
+                      borderRadius: 2,
+                      textTransform: 'none',
+                      background: 'linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%)',
+                      boxShadow: '0 4px 15px 0 rgba(46,125,50,0.3)',
+                      maxWidth: '400px',
+                      '&:hover': {
+                        background: 'linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%)',
+                        boxShadow: '0 6px 20px 0 rgba(46,125,50,0.4)',
+                        transform: 'translateY(-2px)'
+                      },
+                      transition: 'all 0.3s ease'
+                    }}
+                  >
+                    {isMarkingAttendance ? 'Marking Attendance...' : 'Mark Attendance'}
+                  </Button>
+                  <Typography 
+                    variant="body2" 
+                    sx={{ 
+                      mt: 2, 
+                      color: '#2e7d32',
+                      opacity: 0.8,
+                      textAlign: 'center' 
+                    }}
+                  >
+                    {!isLocationVerified 
+                      ? 'Please verify your location first'
+                      : attendanceMarked 
+                        ? 'Attendance marked for today!'
+                        : 'Click to record your attendance for today'
+                    }
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
           </Grid>
 
           {/* Quick Actions */}
@@ -205,6 +387,61 @@ const Dashboard = () => {
           </Grid>
         </Grid>
       </Box>
+
+      {/* Success Dialog */}
+      <Dialog
+        open={showSuccessDialog}
+        onClose={() => setShowSuccessDialog(false)}
+        PaperProps={{
+          sx: {
+            borderRadius: 2,
+            minWidth: '300px'
+          }
+        }}
+      >
+        <DialogTitle sx={{ textAlign: 'center', pt: 3 }}>
+          <CheckCircleIcon sx={{ fontSize: 60, color: '#2e7d32', mb: 2 }} />
+          <Typography variant="h6" component="div">
+            Attendance Marked Successfully!
+          </Typography>
+        </DialogTitle>
+        <DialogContent sx={{ pb: 3 }}>
+          <Typography variant="body1" sx={{ textAlign: 'center', color: '#555' }}>
+            Your attendance has been recorded for today
+          </Typography>
+        </DialogContent>
+      </Dialog>
+
+      {/* Error Alerts */}
+      {attendanceStatus === 'error' && (
+        <Alert 
+          severity="error" 
+          sx={{ 
+            position: 'fixed', 
+            bottom: 24, 
+            right: 24, 
+            boxShadow: 3 
+          }}
+          onClose={() => setAttendanceStatus(null)}
+        >
+          Failed to mark attendance. Please try again.
+        </Alert>
+      )}
+
+      {attendanceStatus === 'location-error' && (
+        <Alert 
+          severity="error" 
+          sx={{ 
+            position: 'fixed', 
+            bottom: 24, 
+            right: 24, 
+            boxShadow: 3 
+          }}
+          onClose={() => setAttendanceStatus(null)}
+        >
+          You must be within 500 meters of the college to mark attendance!
+        </Alert>
+      )}
     </Container>
   );
 };
