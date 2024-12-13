@@ -8,13 +8,9 @@ import {
   Grid,
   Card,
   CardContent,
-  Alert,
   Paper,
   Avatar,
-  Divider,
   IconButton,
-  LinearProgress,
-  Chip
 } from '@mui/material';
 import {
   AssessmentOutlined as AssessmentIcon,
@@ -22,36 +18,15 @@ import {
   AccessTimeOutlined as AccessTimeIcon,
   CalendarTodayOutlined as CalendarIcon,
   ExitToAppOutlined as LogoutIcon,
-  TrendingUpOutlined as TrendingUpIcon,
-  CheckCircleOutline as CheckCircleIcon,
-  LocationOnOutlined as LocationIcon
 } from '@mui/icons-material';
-import LocationTracker from './LocationTracker';
-
-// College location coordinates
-const COLLEGE_LOCATION = {
-  latitude: 19.0760,
-  longitude: 72.8777
-};
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { name,id } = location.state || {};
+  const { name, id } = location.state || {};
   const teacherId = location.state?.teacherId;
 
-  // Debugging: Log the teacherId
-  console.log('Teacher ID:', teacherId);
-  console.log(id)
-
-  const [isMarked, setIsMarked] = useState(false);
-  const [canMarkAttendance, setCanMarkAttendance] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [attendanceStats, setAttendanceStats] = useState({
-    present: 85,
-    total: 100,
-    streak: 7
-  });
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -59,18 +34,6 @@ const Dashboard = () => {
     }, 1000);
     return () => clearInterval(timer);
   }, []);
-
-  const handleLocationVerified = (isWithinRange, location) => {
-    console.log('Location verified:', { isWithinRange, location });
-    setCanMarkAttendance(isWithinRange);
-  };
-
-  const markAttendance = () => {
-    if (canMarkAttendance) {
-      setIsMarked(true);
-      // Here you would typically make an API call to record attendance
-    }
-  };
 
   const getGreeting = () => {
     const hour = currentTime.getHours();
@@ -130,95 +93,69 @@ const Dashboard = () => {
         </Paper>
 
         <Grid container spacing={4}>
-          {/* Stats Cards */}
-          <Grid item xs={12} md={4}>
-            <Card sx={{ height: '100%', bgcolor: '#e3f2fd', borderRadius: 2 }}>
-              <CardContent>
-                <Typography variant="h6" gutterBottom color="primary">
-                  Attendance Rate
+          {/* Mark Attendance Card */}
+          <Grid item xs={12}>
+            <Card 
+              sx={{ 
+                background: 'linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%)',
+                borderRadius: 2,
+                boxShadow: '0 4px 20px 0 rgba(0,0,0,0.1)',
+                transition: 'transform 0.2s ease-in-out',
+                '&:hover': {
+                  transform: 'translateY(-4px)'
+                }
+              }}
+            >
+              <CardContent sx={{ textAlign: 'center', py: 4 }}>
+                <Typography 
+                  variant="h5" 
+                  sx={{ 
+                    mb: 3, 
+                    color: '#1b5e20',
+                    fontWeight: 600 
+                  }}
+                >
+                  Ready to Mark Your Attendance?
                 </Typography>
-                <Box sx={{ mt: 2, mb: 1 }}>
-                  <Typography variant="h3" component="div" color="text.primary">
-                    {Math.round((attendanceStats.present / attendanceStats.total) * 100)}%
-                  </Typography>
-                </Box>
-                <LinearProgress
-                  variant="determinate"
-                  value={(attendanceStats.present / attendanceStats.total) * 100}
-                  sx={{ height: 8, borderRadius: 4, bgcolor: '#90caf9' }}
-                />
-                <Typography variant="body2" sx={{ mt: 1 }} color="text.secondary">
-                  {attendanceStats.present} days present out of {attendanceStats.total} working days
+                <Button
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                  onClick={() => navigate('/attendance', { state: { id } })}
+                  startIcon={
+                    <HowToRegIcon sx={{ fontSize: 28 }} />
+                  }
+                  sx={{
+                    py: 2.5,
+                    px: 6,
+                    fontSize: '1.3rem',
+                    fontWeight: 600,
+                    borderRadius: 3,
+                    textTransform: 'none',
+                    background: 'linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%)',
+                    boxShadow: '0 4px 15px 0 rgba(46,125,50,0.3)',
+                    maxWidth: '600px',
+                    margin: '0 auto',
+                    '&:hover': {
+                      background: 'linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%)',
+                      boxShadow: '0 6px 20px 0 rgba(46,125,50,0.4)',
+                      transform: 'translateY(-2px)'
+                    },
+                    transition: 'all 0.3s ease'
+                  }}
+                >
+                  Mark Attendance
+                </Button>
+                <Typography 
+                  variant="body1" 
+                  sx={{ 
+                    mt: 2, 
+                    color: '#2e7d32',
+                    opacity: 0.8 
+                  }}
+                >
+                  Click to record your attendance for today
                 </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-
-          <Grid item xs={12} md={4}>
-            <Card sx={{ height: '100%', bgcolor: '#f8fafc' }}>
-              <CardContent>
-                <Typography variant="h6" gutterBottom color="primary">
-                  Current Streak
-                </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
-                  <TrendingUpIcon sx={{ fontSize: 40, color: '#4caf50', mr: 2 }} />
-                  <Typography variant="h3" component="div" color="text.primary">
-                    {attendanceStats.streak}
-                  </Typography>
-                  <Typography variant="h6" color="text.secondary" sx={{ ml: 1 }}>
-                    days
-                  </Typography>
-                </Box>
-                <Chip
-                  icon={<CheckCircleIcon />}
-                  label="Keep it up!"
-                  color="success"
-                  variant="outlined"
-                  sx={{ mt: 2 }}
-                />
-              </CardContent>
-            </Card>
-          </Grid>
-
-          <Grid item xs={12} md={4}>
-            <Card sx={{ height: '100%', bgcolor: '#f8fafc' }}>
-              <CardContent>
-                <Typography variant="h6" gutterBottom color="primary">
-                  Location Status
-                </Typography>
-                <LocationTracker
-                  collegeLocation={COLLEGE_LOCATION}
-                  onLocationVerified={handleLocationVerified}
-                />
-                {canMarkAttendance && !isMarked && (
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={markAttendance}
-                    startIcon={<HowToRegIcon />}
-                    fullWidth
-                    sx={{
-                      mt: 2,
-                      py: 1.5,
-                      boxShadow: 2,
-                      '&:hover': { boxShadow: 4 }
-                    }}
-                  >
-                    Mark Attendance
-                  </Button>
-                )}
-                {isMarked && (
-                  <Alert
-                    severity="success"
-                    sx={{
-                      mt: 2,
-                      borderRadius: 2,
-                      '& .MuiAlert-icon': { fontSize: '1.5rem' }
-                    }}
-                  >
-                    Attendance marked successfully for today
-                  </Alert>
-                )}
               </CardContent>
             </Card>
           </Grid>
@@ -231,7 +168,7 @@ const Dashboard = () => {
                   Quick Actions
                 </Typography>
                 <Grid container spacing={3}>
-                  <Grid item xs={12} sm={6} md={4}>
+                  <Grid item xs={12} sm={6}>
                     <Button
                       variant="contained"
                       color="primary"
@@ -247,22 +184,7 @@ const Dashboard = () => {
                       View Statistics
                     </Button>
                   </Grid>
-                  <Grid item xs={12} sm={6} md={4}>
-                    <Button
-                      variant="outlined"
-                      color="secondary"
-                      startIcon={<LocationIcon />}
-                      fullWidth
-                      sx={{
-                        py: 2,
-                        borderRadius: 2,
-                        '&:hover': { borderWidth: 2 }
-                      }}
-                    >
-                      Update Location
-                    </Button>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={4}>
+                  <Grid item xs={12} sm={6}>
                     <Button
                       variant="outlined"
                       color="secondary"
@@ -276,25 +198,6 @@ const Dashboard = () => {
                     >
                       View Schedule
                     </Button>
-                  </Grid>
-
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Button
-                      variant="outlined"
-                      color="secondary"
-                      fullWidth
-                      onClick={() => navigate('/attendance', { state: { id } })}
-                      sx={{
-                        py: 2,
-                         borderRadius: 2,
-                        borderWidth: 2,
-                        '&:hover': { borderWidth: 2 }
-                      }}
-                    >
-                      Mark Attendance
-                    </Button>
-
-
                   </Grid>
                 </Grid>
               </CardContent>
