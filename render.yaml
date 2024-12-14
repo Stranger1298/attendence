@@ -11,10 +11,3 @@ services:
         value: production
       - key: PORT
         value: 3000
-
-  - type: static
-    name: attendance-frontend
-    rootDir: frontend
-    buildCommand: npm install && npm run build
-    staticPublishPath: dist
-    plan: free
