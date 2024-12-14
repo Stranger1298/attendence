@@ -2,6 +2,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const schedule = require('node-schedule');
 const cors = require('cors');
 
 const app = express();
@@ -123,37 +124,79 @@ const Attendance = mongoose.model('Attendance', attendanceSchema);
 // API endpoint to mark attendance
 app.post('/api/attendance/mark', async (req, res) => {
   const { userId, timestamp, location } = req.body;
+  const currentDate = new Date(timestamp).toISOString().split('T')[0];
 
   try {
-    // Check if attendance record exists for the given userId
     let attendanceRecord = await Attendance.findOne({ Id: userId });
 
     const attendanceEntry = {
-      Date: new Date(timestamp).toISOString().split('T')[0], // Format date
-      Time_In: new Date(timestamp).toLocaleTimeString(), // Current time
+      Date: currentDate,
+      Time_In: new Date(timestamp).toLocaleTimeString(),
       Present_Absent: "Present",
       Time_Out: null,
     };
 
     if (!attendanceRecord) {
-      // If no record exists, create a new one
       attendanceRecord = new Attendance({
         Id: userId,
         Attendance: [attendanceEntry],
       });
     } else {
-      // If record exists, modify the existing data
+      const todayAttendance = attendanceRecord.Attendance.find(
+        entry => entry.Date === currentDate
+      );
+
+      if (todayAttendance) {
+        return res.status(400).json({
+          success: false,
+          message: "Attendance already marked for today"
+        });
+      }
+
       attendanceRecord.Attendance.push(attendanceEntry);
     }
 
     await attendanceRecord.save();
-    res.status(200).send("Attendance marked successfully");
+    res.status(200).json({
+      success: true,
+      message: "Attendance marked successfully"
+    });
+
   } catch (error) {
     console.error("Error marking attendance", error);
-    res.status(500).send("Failed to mark attendance");
+    res.status(500).json({
+      success: false,
+      message: "Attendance already made"
+    });
   }
 });
+schedule.scheduleJob('59 23 * * *', async () => {
+  const currentDate = new Date().toISOString().split('T')[0];
+  console.log(`Running scheduled task to mark absentees for ${currentDate}`);
 
+  try {
+    const allRecords = await Attendance.find({});
+    for (const record of allRecords) {
+      const todayAttendance = record.Attendance.find(
+        entry => entry.Date === currentDate
+      );
+
+      if (!todayAttendance) {
+        record.Attendance.push({
+          Date: currentDate,
+          Time_In: null,
+          Present_Absent: "Absent",
+          Time_Out: null,
+        });
+        await record.save();
+        console.log(`Marked absent for Id: ${record.Id}`);
+      }
+    }
+  } catch (error) {
+    console.error("Error marking absentees", error);
+  }
+});
+  
 // Start the server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
