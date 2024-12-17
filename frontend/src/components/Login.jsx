@@ -31,7 +31,7 @@ const Login = ({ onLogin }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:3000/api/login', {
+      const response = await axios.post('http://api/login', {
         teacherId: credentials.teacherId.trim(),
         password: credentials.password.trim(),
       });
