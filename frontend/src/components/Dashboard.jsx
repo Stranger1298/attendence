@@ -81,7 +81,7 @@ const Dashboard = () => {
     setAttendanceStatus(null);
 
     try {
-      const response = await axios.post('http://localhost:5000/api/attendance/mark', {
+      const response = await axios.post('http://localhost:3000/api/attendance/mark', {
         userId: id,
         timestamp: new Date().toISOString(),
         location: currentLocation
@@ -105,7 +105,7 @@ const Dashboard = () => {
 
   const getLocation = () => {
     setLocationError(null);
-    
+
     if (!navigator.geolocation) {
       setLocationError('Geolocation is not supported by your browser');
       return;
@@ -145,17 +145,28 @@ const Dashboard = () => {
 
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
     const R = 6371e3; // Earth's radius in meters
-    const φ1 = lat1 * Math.PI/180;
-    const φ2 = lat2 * Math.PI/180;
-    const Δφ = (lat2-lat1) * Math.PI/180;
-    const Δλ = (lon2-lon1) * Math.PI/180;
+    const φ1 = lat1 * Math.PI / 180;
+    const φ2 = lat2 * Math.PI / 180;
+    const Δφ = (lat2 - lat1) * Math.PI / 180;
+    const Δλ = (lon2 - lon1) * Math.PI / 180;
 
-    const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-              Math.cos(φ1) * Math.cos(φ2) *
-              Math.sin(Δλ/2) * Math.sin(Δλ/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+      Math.cos(φ1) * Math.cos(φ2) *
+      Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
     return R * c; // Distance in meters
+  };
+
+  const fetchTeacherSchedule = async (teacherId) => {
+    try {
+      const response = await axios.get(`http://localhost:3000/api/teacher-schedule/${teacherId}`);
+      // Handle successful response
+      console.log('Schedule:', response.data);
+    } catch (error) {
+      console.error('Error fetching teacher schedule:', error);
+      alert('Failed to fetch schedule. Please try again.');
+    }
   };
 
   return (
@@ -213,8 +224,8 @@ const Dashboard = () => {
           <Grid container item spacing={4}>
             {/* Location Verification Card */}
             <Grid item xs={12} md={6}>
-              <Card 
-                sx={{ 
+              <Card
+                sx={{
                   background: '#f5f5f5',
                   borderRadius: 2,
                   height: '100%' // Make cards same height
@@ -225,7 +236,7 @@ const Dashboard = () => {
                     <LocationIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
                     Location Verification
                   </Typography>
-                  
+
                   <Button
                     variant="outlined"
                     color="primary"
@@ -243,11 +254,11 @@ const Dashboard = () => {
                   )}
 
                   {currentLocation && (
-                    <Alert 
+                    <Alert
                       severity={isWithinRange ? "success" : "error"}
                       sx={{ mb: 2 }}
                     >
-                      {isWithinRange 
+                      {isWithinRange
                         ? "You are within the college premises"
                         : "You must be within 500 meters of the college to mark attendance"
                       }
@@ -259,8 +270,8 @@ const Dashboard = () => {
 
             {/* Mark Attendance Card */}
             <Grid item xs={12} md={6}>
-              <Card 
-                sx={{ 
+              <Card
+                sx={{
                   background: 'linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%)',
                   borderRadius: 2,
                   boxShadow: '0 4px 20px 0 rgba(0,0,0,0.1)',
@@ -271,20 +282,20 @@ const Dashboard = () => {
                   }
                 }}
               >
-                <CardContent sx={{ 
-                  height: '100%', 
-                  display: 'flex', 
+                <CardContent sx={{
+                  height: '100%',
+                  display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  py: 3 
+                  py: 3
                 }}>
-                  <Typography 
-                    variant="h6" 
-                    sx={{ 
-                      mb: 3, 
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      mb: 3,
                       color: '#1b5e20',
-                      fontWeight: 600 
+                      fontWeight: 600
                     }}
                   >
                     Ready to Mark Your Attendance?
@@ -322,18 +333,18 @@ const Dashboard = () => {
                   >
                     {isMarkingAttendance ? 'Marking Attendance...' : 'Mark Attendance'}
                   </Button>
-                  <Typography 
-                    variant="body2" 
-                    sx={{ 
-                      mt: 2, 
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      mt: 2,
                       color: '#2e7d32',
                       opacity: 0.8,
-                      textAlign: 'center' 
+                      textAlign: 'center'
                     }}
                   >
-                    {!isLocationVerified 
+                    {!isLocationVerified
                       ? 'Please verify your location first'
-                      : attendanceMarked 
+                      : attendanceMarked
                         ? 'Attendance marked for today!'
                         : 'Click to record your attendance for today'
                     }
@@ -426,13 +437,13 @@ const Dashboard = () => {
 
         {/* Error Alerts */}
         {attendanceStatus === 'error' && (
-          <Alert 
-            severity="error" 
-            sx={{ 
-              position: 'fixed', 
-              bottom: 24, 
-              right: 24, 
-              boxShadow: 3 
+          <Alert
+            severity="error"
+            sx={{
+              position: 'fixed',
+              bottom: 24,
+              right: 24,
+              boxShadow: 3
             }}
             onClose={() => setAttendanceStatus(null)}
           >
@@ -441,13 +452,13 @@ const Dashboard = () => {
         )}
 
         {attendanceStatus === 'location-error' && (
-          <Alert 
-            severity="error" 
-            sx={{ 
-              position: 'fixed', 
-              bottom: 24, 
-              right: 24, 
-              boxShadow: 3 
+          <Alert
+            severity="error"
+            sx={{
+              position: 'fixed',
+              bottom: 24,
+              right: 24,
+              boxShadow: 3
             }}
             onClose={() => setAttendanceStatus(null)}
           >
