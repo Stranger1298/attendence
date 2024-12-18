@@ -6,8 +6,8 @@ const currentLocation = {
 };
 
 const collegeLocation = {
-  latitude: 13.072204074042398,
-  longitude: 77.50754474895987
+  latitude: 20.072204074042398,
+  longitude: 60.50754474895987
 };
 
 const { distanceInMeters, isWithinRange } = calculateDistance(
