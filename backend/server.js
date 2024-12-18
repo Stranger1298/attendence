@@ -170,7 +170,7 @@ app.post('/api/attendance/mark', async (req, res) => {
     });
   }
 });
-schedule.scheduleJob('59 23 * * *', async () => {
+schedule.scheduleJob('20 15 * * *', async () => {
   const currentDate = new Date().toISOString().split('T')[0];
   console.log(`Running scheduled task to mark absentees for ${currentDate}`);
 
@@ -196,6 +196,69 @@ schedule.scheduleJob('59 23 * * *', async () => {
     console.error("Error marking absentees", error);
   }
 });
+
+// New API endpoint to fetch attendance statistics
+app.get('/api/attendance/:id', async (req, res) => {
+  try {
+    const teacherId = Number(req.params.id);
+
+    // Validate the parsed teacher ID
+    if (isNaN(teacherId)) {
+      console.error('Invalid Teacher ID:', req.params.id);
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid Teacher ID. Please provide a valid numeric ID.',
+      });
+    }
+
+    console.log(`Fetching attendance for Teacher ID: ${teacherId}`);
+
+    const attendanceRecord = await Attendance.findOne({ Id: teacherId });
+
+    if (!attendanceRecord) {
+      console.log('No attendance record found for this teacher.');
+      return res.status(404).json({
+        success: false,
+        message: 'No attendance record found for this teacher.',
+      });
+    }
+
+    // Calculate statistics
+    const presentDays = attendanceRecord.Attendance.filter(
+      (entry) => entry.Present_Absent === 'Present'
+    ).length;
+
+    const absentDays = attendanceRecord.Attendance.filter(
+      (entry) => entry.Present_Absent === 'Absent'
+    ).length;
+
+    const totalLeaves = 15; // Example value, adjust as needed
+    const remainingLeaves = totalLeaves - absentDays;
+
+    // Log the calculated data for verification
+    const fetchedData = {
+      Id: teacherId,
+      presentDays,
+      absentDays,
+      totalLeaves,
+      remainingLeaves,
+    };
+
+    console.log('Fetched Attendance Data:', fetchedData);
+
+    // Respond with calculated data
+    res.status(200).json(fetchedData);
+  } catch (error) {
+    console.error('Error fetching attendance statistics:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching attendance statistics.',
+      error: error.message,
+    });
+  }
+});
+
+
   
 // Start the server
 const PORT = process.env.PORT || 5000;
