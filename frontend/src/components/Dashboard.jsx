@@ -378,7 +378,7 @@ const Dashboard = () => {
                     <Button
                       variant="contained"
                       color="primary"
-                      onClick={() => navigate('/statistics')}
+                      onClick={() => navigate('/statistics', { state: { id } })}
                       startIcon={<AssessmentIcon />}
                       fullWidth
                       sx={{

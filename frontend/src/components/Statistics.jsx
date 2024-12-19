@@ -1,32 +1,62 @@
+import React, { useState, useEffect } from 'react';
 import { Box, Container, Typography, Paper, Grid } from '@mui/material';
 import { Pie } from 'react-chartjs-2';
+import { useLocation, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import {
   Chart as ChartJS,
   ArcElement,
   Tooltip,
-  Legend
+  Legend,
 } from 'chart.js';
 
-ChartJS.register(
-  ArcElement,
-  Tooltip,
-  Legend
-);
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 const Statistics = () => {
-  const attendanceData = {
-    present: 15,
-    absent: 3,
-    leaveLeft: 12,
-    totalWorkingDays: 240, // Total working days in a year
-    totalLeaves: 15 // Total leaves allowed
-  };
+  const [attendanceData, setAttendanceData] = useState({
+    presentDays: 0,
+    absentDays: 0,
+    totalLeaves: 15, // Default value
+    remainingLeaves: 0,
+    totalWorkingDays: 250, // Fixed total working days
+  });
+
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { id } = location.state || {};
+
+  useEffect(() => {
+    if (!id) {
+      console.error('Teacher ID is missing.');
+      navigate('/error', { state: { message: 'Teacher ID is missing.' } });
+      return;
+    }
+
+    const fetchAttendanceData = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/attendance/${id}`);
+        const { presentDays, absentDays, totalLeaves, remainingLeaves } = response.data;
+
+        setAttendanceData({
+          presentDays,
+          absentDays,
+          totalLeaves,
+          remainingLeaves,
+          totalWorkingDays: 250, // Fixed value
+        });
+      } catch (error) {
+        console.error('Error fetching attendance data:', error);
+      }
+    };
+
+    fetchAttendanceData();
+  }, [id, navigate]);
 
   const chartData = {
-    labels: ['Present Days', 'Absent Days', 'Leave Left'],
+    labels: ['Present Days', 'Absent Days', 'Remaining Leaves'],
     datasets: [
       {
-        data: [attendanceData.present, attendanceData.absent, attendanceData.leaveLeft],
+        data: [attendanceData.presentDays, attendanceData.absentDays, attendanceData.remainingLeaves],
         backgroundColor: [
           'rgba(75, 192, 192, 0.6)',
           'rgba(255, 99, 132, 0.6)',
@@ -48,7 +78,7 @@ const Statistics = () => {
         <Typography variant="h4" component="h1" gutterBottom>
           Attendance Statistics
         </Typography>
-        
+
         <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
             <Paper elevation={3} sx={{ p: 3 }}>
@@ -63,18 +93,18 @@ const Statistics = () => {
                   Total Leaves Allowed: {attendanceData.totalLeaves}
                 </Typography>
                 <Typography variant="body1">
-                  Present Days: {attendanceData.present}
+                  Present Days: {attendanceData.presentDays}
                 </Typography>
                 <Typography variant="body1">
-                  Absent Days: {attendanceData.absent}
+                  Absent Days: {attendanceData.absentDays}
                 </Typography>
                 <Typography variant="body1">
-                  Remaining Leaves: {attendanceData.leaveLeft}
+                  Remaining Leaves: {attendanceData.remainingLeaves}
                 </Typography>
               </Box>
             </Paper>
           </Grid>
-          
+
           <Grid item xs={12} md={6}>
             <Paper elevation={3} sx={{ p: 3 }}>
               <Typography variant="h6" gutterBottom align="center">
