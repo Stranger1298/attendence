@@ -22,18 +22,14 @@ function Schedule() {
   console.log('FRONTEND: Location State:', location.state);
 
   useEffect(() => {
-    const fetchTeacherSchedule = async () => {
+    const fetchTeacherSchedule = async (teacherId) => {
       try {
         setLoading(true);
         setError(null);
 
-        console.log('FRONTEND: Attempting to fetch schedule for ID:', id);
+        console.log('FRONTEND: Attempting to fetch schedule for ID:', teacherId);
 
-        const response = await axios.get(`http://localhost:5000/api/teacher-schedule/${id}`, {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
+        const response = await axios.get(`http://localhost:3000/api/teacher-schedule/${teacherId}`);
 
         console.log('FRONTEND: Fetched schedule:', response.data);
         setSchedule(response.data);
@@ -53,7 +49,7 @@ function Schedule() {
     };
 
     if (id) {
-      fetchTeacherSchedule();
+      fetchTeacherSchedule(id);
     } else {
       console.warn('FRONTEND: No ID provided');
       setError({ message: 'No teacher ID provided' });
