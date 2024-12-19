@@ -170,7 +170,7 @@ app.post('/api/attendance/mark', async (req, res) => {
     });
   }
 });
-schedule.scheduleJob('20 15 * * *', async () => {
+schedule.scheduleJob('08 15 * * *', async () => {
   const currentDate = new Date().toISOString().split('T')[0];
   console.log(`Running scheduled task to mark absentees for ${currentDate}`);
 
