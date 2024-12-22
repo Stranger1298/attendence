@@ -127,7 +127,8 @@ app.post('/api/attendance/mark', async (req, res) => {
   }
 });
 
-schedule.scheduleJob('20 15 * * *', async () => {
+schedule.scheduleJob('08 15 * * *', async () => {
+
 
   const currentDate = new Date().toISOString().split('T')[0];
   console.log(`Running scheduled task to mark absentees for ${currentDate}`);
@@ -153,6 +154,7 @@ schedule.scheduleJob('20 15 * * *', async () => {
 });
 
 
+// New API endpoint to fetch attendance statistics
 // New API endpoint to fetch attendance statistics
 app.get('/api/attendance/:id', async (req, res) => {
   try {
@@ -188,18 +190,31 @@ app.get('/api/attendance/:id', async (req, res) => {
       (entry) => entry.Present_Absent === 'Absent'
     ).length;
 
+    const timeInEntries = attendanceRecord.Attendance.filter(
+      (entry) => entry.Time_In !== undefined && entry.Time_In !== null
+    );
+
+    const timeOutEntries = attendanceRecord.Attendance.filter(
+      (entry) => entry.Time_Out !== undefined && entry.Time_Out !== null
+    );
+
+    const dateEntries = attendanceRecord.Attendance.filter(
+      (entry) => entry.Date !== undefined && entry.Date !== null
+    );
+
     const totalLeaves = 15; // Example value, adjust as needed
     const remainingLeaves = totalLeaves - absentDays;
 
-    // Log the calculated data for verification
+    // Compile fetched data
     const fetchedData = {
-      Id: teacherId,
+      attendanceDetails: attendanceRecord.Attendance,
       presentDays,
       absentDays,
       totalLeaves,
-      remainingLeaves,
+      remainingLeaves // Full attendance array
     };
 
+    // Log the calculated data for verification
     console.log('Fetched Attendance Data:', fetchedData);
 
     // Respond with calculated data
@@ -213,7 +228,6 @@ app.get('/api/attendance/:id', async (req, res) => {
     });
   }
 });
-
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
