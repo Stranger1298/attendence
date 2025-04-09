@@ -1,3 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Your existing styles */
 .app {
   min-height: 100vh;
   background-color: #f5f5f5;
