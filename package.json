@@ -3,6 +3,7 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/material": "^6.2.0",
+    "node-fetch": "^2.7.0",
     "node-schedule": "^2.1.1"
   }
 }
