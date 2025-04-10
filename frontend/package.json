@@ -9,19 +9,19 @@
     "lint": "eslint .",
     "preview": "vite preview"
   },
-
   "dependencies": {
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "@google/generative-ai": "^0.24.0",
-    "@mui/icons-material": "^5.15.1",
-    "@mui/material": "^5.15.1",
+    "@mui/icons-material": "^6.2.0",
+    "@mui/material": "^6.2.0",
+    "@tailwindcss/postcss": "^4.1.3",
     "attendence": "file:",
     "axios": "^1.7.9",
     "chart.js": "^4.4.1",
-    "react": "^18.2.0",
+    "react": "^18.3.1",
     "react-chartjs-2": "^5.2.0",
-    "react-dom": "^18.2.0",
+    "react-dom": "^18.3.1",
     "react-router-dom": "^6.21.0"
   },
   "devDependencies": {
@@ -36,19 +36,5 @@
     "postcss": "^8.5.3",
     "tailwindcss": "^4.1.3",
     "vite": "^6.2.5"
-  },
-  "dependencies": {
-    "@emotion/react": "^11.11.3",
-    "@emotion/styled": "^11.11.0",
-    "@mui/icons-material": "^6.2.0",
-    "@mui/material": "^6.2.0",
-    "@tailwindcss/postcss": "^4.1.3",
-    "attendence": "file:",
-    "axios": "^1.7.9",
-    "chart.js": "^4.4.1",
-    "react": "^18.3.1",
-    "react-chartjs-2": "^5.2.0",
-    "react-dom": "^18.3.1",
-    "react-router-dom": "^6.21.0"
   }
 }
