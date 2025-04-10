@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -14,7 +15,10 @@
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
     "express": "^4.21.2",
+
+    "form-data": "^4.0.2",
     "mongoose": "^8.8.4",
-    "node-schedule": "^2.1.1"
+    "node-fetch": "^3.3.2",
+    "pdf-parse": "^1.1.1"
   }
 }

@@ -5,6 +5,7 @@ import Dashboard from './components/Dashboard'
 import Statistics from './components/Statistics'
 import Schedule from './components/schedule'
 import AttendanceForm from './components/AttendanceForm'
+import  ShortNotes from './components/ShortNotes'
 import './App.css'
 
 function App() {
@@ -18,45 +19,54 @@ function App() {
     <Router>
       <div className="app">
         <Routes>
-          <Route 
-            path="/login" 
+          <Route
+            path="/login"
             element={
-              !isAuthenticated ? 
-              <Login onLogin={handleLogin} /> : 
-              <Navigate to="/dashboard" />
-            } 
+              !isAuthenticated ?
+                <Login onLogin={handleLogin} /> :
+                <Navigate to="/dashboard" />
+            }
           />
-          <Route 
-            path="/dashboard" 
+          <Route
+            path="/dashboard"
             element={
-              isAuthenticated ? 
-              <Dashboard /> : 
-              <Navigate to="/login" />
-            } 
+              isAuthenticated ?
+                <Dashboard /> :
+                <Navigate to="/login" />
+            }
           />
-          <Route 
-            path="/statistics" 
+          <Route
+            path="/statistics"
             element={
-              isAuthenticated ? 
-              <Statistics /> : 
-              <Navigate to="/login" />
-            } 
+              isAuthenticated ?
+                <Statistics /> :
+                <Navigate to="/login" />
+            }
           />
-          <Route 
-            path="/schedule" 
+          <Route
+            path="/schedule"
             element={
-              isAuthenticated ? 
-              <Schedule /> : 
-              <Navigate to="/login" />
-            } 
+              isAuthenticated ?
+                <Schedule /> :
+                <Navigate to="/login" />
+            }
           />
-          <Route 
-            path="/attendance" 
+          <Route
+            path="/attendance"
             element={
-              isAuthenticated ? 
-              <AttendanceForm /> : 
-              <Navigate to="/login" />
-            } 
+              isAuthenticated ?
+                <AttendanceForm /> :
+                <Navigate to="/login" />
+            }
+          />
+
+          <Route
+            path="/notes"
+            element={
+              isAuthenticated ?
+                <ShortNotes /> :
+                <Navigate to="/login" />
+            }
           />
           <Route path="/" element={<Navigate to="/login" />} />
         </Routes>
