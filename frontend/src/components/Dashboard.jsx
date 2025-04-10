@@ -394,6 +394,21 @@ const Dashboard = () => {
                       View Schedule
                     </Button>
                   </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Button
+                      variant="outlined"
+                      color="secondary"
+                      fullWidth
+                      onClick={() => navigate('/notes', { state: { id } })}
+                      sx={{
+                        py: 2,
+                        borderRadius: 2,
+                        '&:hover': { borderWidth: 2 }
+                      }}
+                    >
+                      summary
+                    </Button>
+                  </Grid>
                 </Grid>
               </CardContent>
             </Card>

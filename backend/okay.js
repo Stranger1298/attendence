@@ -36,7 +36,7 @@ async function extractTextFromPDF(filePath) {
     return;
   }
 
-  // console.log('✅ Extracted Text:\n', extractedText);
+  console.log('✅ Extracted Text:\n', extractedText);
 
   // Now send it to Gemini for summarization
   await generateShortNotesWithGemini(extractedText);
@@ -54,7 +54,7 @@ async function generateShortNotesWithGemini(text) {
         {
           parts: [
             {
-              text: `Create concise short notes for teachers from the following content:\n\n${text}`
+              text: `Create detailed notes from each topic in the pdf\n\n${text}`
             }
           ]
         }
@@ -99,4 +99,4 @@ async function generateShortNotesWithGemini(text) {
 }
 
 // Run with a file path
-extractTextFromPDF('e:/attendence/backend/okay.pdf');
+extractTextFromPDF('e:/attendence/backend/okk.pdf');
